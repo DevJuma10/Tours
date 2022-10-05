@@ -1,9 +1,28 @@
 const fs = require('fs');
 const express = require('express');
 const app = express();
+const morgan = require('morgan');
 
 app.use(express.json());
 
+/**
+ * 3rd PARTY MIDDLEWARE
+ */
+app.use(morgan('dev'));
+
+/**
+ * CREATING CUSTOM MIDDLEWARE
+ */
+
+app.use((req, res, next) => {
+  console.log('HELLO FROM THE MIDDLE_WARE');
+  next();
+});
+
+app.use((req, res, next) => {
+  req.requestDate = new Date().toString();
+  next();
+});
 //READ DATA FILE
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
@@ -13,9 +32,11 @@ const tours = JSON.parse(
 
 //GET REQUEST
 const getAllTours = (req, res) => {
+  console.log(req.requestDate);
   res.status(200).json({
     status: 'success',
     results: tours.length,
+    date: req.requestDate,
     data: {
       tours,
     },
