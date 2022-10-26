@@ -11,10 +11,7 @@ const tourControler = require('../controlers/tourControler');
 
 // router.param('id', tourControler.checkID);
 
-router
-  .route('/')
-  .get(tourControler.getAllTours)
-  .post(tourControler.checkBody, tourControler.createTour);
+router.route('/').get(tourControler.getAllTours).post(tourControler.createTour);
 
 router
   .route('/:id')
