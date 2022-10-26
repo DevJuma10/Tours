@@ -9,7 +9,7 @@ const tourControler = require('../controlers/tourControler');
 //CUSTOM MIDDLEWARE TO SPECIFIC PARAMETER
 //  PARAM MIDDLEWARE
 
-router.param('id', tourControler.checkID);
+// router.param('id', tourControler.checkID);
 
 router
   .route('/')

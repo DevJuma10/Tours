@@ -1,24 +1,25 @@
 /**
  * TOUR CONTROLERS
  */
-const fs = require('fs');
+// const fs = require('fs');
+const Tour = require('./../models/tourModel');
 
 //READ DATA FILE
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
-);
+// const tours = JSON.parse(
+//   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
+// );
 
-//  CUSTOM MIDDLEWARE TO VALIDATE ID
-exports.checkID = (req, res, next, val) => {
-  console.log(`ID is ${val}`);
-  if (req.params.id * 1 > tours.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
-  next();
-};
+// //  CUSTOM MIDDLEWARE TO VALIDATE ID
+// exports.checkID = (req, res, next, val) => {
+//   console.log(`ID is ${val}`);
+//   if (req.params.id * 1 > tours.length) {
+//     return res.status(404).json({
+//       status: 'fail',
+//       message: 'Invalid ID',
+//     });
+//   }
+//   next();
+// };
 
 // CUSTOM MIDDLEWARE TO CHECKBODY
 // CHECK IF BOBY CONTAINS NAME AND PRICE
@@ -40,33 +41,23 @@ exports.getAllTours = (req, res) => {
   console.log(req.requestDate);
   res.status(200).json({
     status: 'success',
-    results: tours.length,
-    date: req.requestDate,
-    data: {
-      tours,
-    },
+    // // results: tours.length,
+    // date: req.requestDate,
+    // data: {
+    //   tours,
+    // },
   });
 };
 
 //CREATE TOUR
 
 exports.createTour = (req, res) => {
-  const newId = tours[tours.length - 1].id + 1;
-  const newTour = ({ id: newId }, req.body);
-
-  tours.push(newTour);
-  fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
-    JSON.stringify(tours),
-    () => {
-      res.status(201).json({
-        status: 'success',
-        data: {
-          tour: newTour,
-        },
-      });
-    }
-  );
+  res.status(201).json({
+    status: 'success',
+    data: {
+      tour: newTour,
+    },
+  });
 };
 
 //GET TOUR
@@ -75,13 +66,13 @@ exports.getTour = (req, res) => {
   const id = req.params.id * 1;
 
   //Find tour with matching id
-  const tour = tours.filter((el) => el.id === id);
+  // const tour = tours.filter((el) => el.id === id);
 
   res.status(200).json({
     status: 'sucesss',
-    data: {
-      tour,
-    },
+    // data: {
+    //   tour,
+    // },
   });
 };
 

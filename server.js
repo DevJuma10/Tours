@@ -35,6 +35,23 @@ mongoose
     console.log('DB Connection succesful');
   });
 
+//  CREATE DOCUMENT
+// const testTour = new Tour({
+//   name: 'The Last Village Lodge',
+//   rating: 3.7,
+//   price: 350,
+//   premium: false,
+// });
+
+// testTour
+//   .save()
+//   .then((doc) => {
+//     console.log(doc);
+//   })
+//   .catch((err) => {
+//     console.log('ERROR: ', err);
+//   });
+
 //START UP SERVER
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
