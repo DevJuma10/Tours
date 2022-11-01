@@ -51,7 +51,7 @@ exports.getAllTours = async (req, res) => {
     // ADVANCED FILTERING
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-    console.log(JSON.parse(queryStr));
+    // console.log(JSON.parse(queryStr));
 
     let query = Tour.find(JSON.parse(queryStr));
 
@@ -65,6 +65,14 @@ exports.getAllTours = async (req, res) => {
       //  Default fallback in the case sorting parameters are not included
     } else {
       query = query.sort('-createdAt');
+    }
+
+    // 3) FIELD LIMITING FEATURE
+    if (req.query.fields) {
+      const fields = req.query.fields.split(',').join(' ');
+      query = query.select(fields);
+    } else {
+      query = query.select('-__v');
     }
 
     // EXECUTE QUERY
