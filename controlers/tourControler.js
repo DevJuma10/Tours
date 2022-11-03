@@ -170,7 +170,7 @@ exports.deleteTour = async (req, res) => {
   }
 };
 
-//  AGGREGARION PIPELINE
+//  AGGREGARION PIPELINE FOR TOUR STATISTICS
 exports.getToursStats = async (req, res) => {
   try {
     const stats = await Tour.aggregate([
@@ -204,6 +204,74 @@ exports.getToursStats = async (req, res) => {
       status: 'success',
       data: {
         stats,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
+};
+
+//  AGGREGATION PIPELINE FOR MONTHLY PLAN
+
+exports.getMonthlyPlan = async (req, res) => {
+  try {
+    const year = req.params.year * 1;
+    const plan = await Tour.aggregate([
+      // REPRODUCE A SINGLE DOCUMENT IN THE CASE START DATES ARE MORE THAN ONE
+      {
+        $unwind: '$startDates',
+      },
+
+      //MATCH YEAR
+      {
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`),
+          },
+        },
+      },
+
+      //  GROUP BY MONTH & LIST TOURS PER MONTH
+
+      {
+        $group: {
+          _id: { $month: '$startDates' },
+          numTourStarts: { $sum: 1 },
+          tours: { $push: '$name' },
+        },
+      },
+
+      //  ADD MONTH FIELD
+      {
+        $addFields: { month: '$_id' },
+      },
+
+      //  HIDE ID FIELD
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+
+      //  SORT BY THE NUMBER OF TOURS
+      {
+        $sort: { numTourStats: 1 },
+      },
+
+      //  SHOW ONLY THE FIRST 5 MONTHS
+      {
+        $limit: 5,
+      },
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        plan,
       },
     });
   } catch (err) {

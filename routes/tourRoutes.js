@@ -11,6 +11,8 @@ const tourControler = require('../controlers/tourControler');
 
 // router.param('id', tourControler.checkID);
 
+router.route('/monthly-plan/:year').get(tourControler.getMonthlyPlan);
+
 router
   .route('/top-5-tours')
   .get(tourControler.aliasTopTours, tourControler.getAllTours);
