@@ -169,3 +169,48 @@ exports.deleteTour = async (req, res) => {
     });
   }
 };
+
+//  AGGREGARION PIPELINE
+exports.getToursStats = async (req, res) => {
+  try {
+    const stats = await Tour.aggregate([
+      // MATCH ITEMS
+      {
+        $match: { ratingsAverage: { $gte: 4.5 } },
+      },
+
+      // GROUP ITEMS
+      {
+        $group: {
+          // _id: null,
+          _id: { $toUpper: '$difficulty' },
+          // _id: '$difficulty',
+          numTours: { $sum: 1 },
+          numRatings: { $sum: '$ratingsQuantity' },
+          avgRatings: { $avg: '$ratingsAverage' },
+          avgPrice: { $avg: '$price' },
+          minPrice: { $min: '$price' },
+          maxPrice: { $max: '$price' },
+        },
+      },
+
+      //  SORT ITEMS IN ASCENDING ORDER of average price
+      {
+        $sort: { avgPrice: 1 },
+      },
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        stats,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(404).json({
+      status: 'fail',
+      message: err,
+    });
+  }
+};

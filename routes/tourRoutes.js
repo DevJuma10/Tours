@@ -15,6 +15,8 @@ router
   .route('/top-5-tours')
   .get(tourControler.aliasTopTours, tourControler.getAllTours);
 
+router.route('/tour-stats').get(tourControler.getToursStats);
+
 router.route('/').get(tourControler.getAllTours).post(tourControler.createTour);
 
 router
