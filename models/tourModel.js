@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 //  CREATE SCHEMA
 const tourSchema = new mongoose.Schema(
@@ -9,6 +10,7 @@ const tourSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
+    slug: String,
 
     duration: {
       type: Number,
@@ -74,6 +76,11 @@ const tourSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+
+    secret: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   //  OPTIONS
@@ -87,6 +94,48 @@ const tourSchema = new mongoose.Schema(
 
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
+});
+
+//  DOCUMENT MIDDLEWARE (pre-middleware): runs before .save() aand .create()
+
+tourSchema.pre('save', function (next) {
+  (this.slug = slugify(this.name)), { lower: true };
+  next();
+});
+
+tourSchema.pre('save', function (next) {
+  console.log('Saving Document ...');
+  next();
+});
+
+//  DOCUMENT MIDDLEWARE (post-middleware): runs after .save() aand .create()
+
+tourSchema.post('save', function (doc, next) {
+  console.log(doc);
+  next();
+});
+
+//  QUERRY MIDDLEWARE
+//  pre-find
+
+// tourSchema.pre('find', function (next) {
+//   next();
+// });
+
+// filter out secret tours from all find operations (find(), findById, findOne)
+tourSchema.pre(/^find/, function (next) {
+  this.find({ secret: { $ne: true } });
+  this.start = Date.now();
+  next();
+});
+
+// post-find
+tourSchema.post(/^find/, function (doc, next) {
+  console.log(
+    `The Querry was completed in ${Date.now() - this.start} milliseconds`
+  );
+  console.log(doc);
+  next();
 });
 
 //  CREATING A SIMPLE TOUR MODEL
