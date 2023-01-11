@@ -4,35 +4,38 @@ const validator = require('validator');
 //NAME, EMAIL, PHOTO, PASSWORD, PASSWORD CONFIRM.
 
 //Create Schema
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'User Must Have Name'],
-  },
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, 'User Must Have Name'],
+    },
 
-  email: {
-    type: String,
-    required: [true, 'User must have a valid email'],
-    unique: true,
-    lowercase: true,
-    validate: [validator.isEmail, 'Pease Provide a valid email'],
-  },
+    email: {
+      type: String,
+      required: [true, 'User must have a valid email'],
+      unique: true,
+      lowercase: true,
+      validate: [validator.isEmail, 'Pease Provide a valid email'],
+    },
 
-  photo: {
-    type: String,
-  },
+    photo: {
+      type: String,
+    },
 
-  password: {
-    type: String,
-    required: [true, 'User must have a password'],
-    minlength: 8,
-  },
+    password: {
+      type: String,
+      required: [true, 'User must have a password'],
+      minlength: 8,
+    },
 
-  passwordConfirm: {
-    type: String,
-    required: [true, 'User should confirm password'],
+    passwordConfirm: {
+      type: String,
+      required: [true, 'User should confirm password'],
+    },
   },
-});
+  { versionKey: false }
+);
 
 //  CREATE MODEL USING SCHEAM
 
