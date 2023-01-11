@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs');
 
 //NAME, EMAIL, PHOTO, PASSWORD, PASSWORD CONFIRM.
 
@@ -32,10 +33,31 @@ const userSchema = new mongoose.Schema(
     passwordConfirm: {
       type: String,
       required: [true, 'User should confirm password'],
+      validate: {
+        // on save or on create check validation
+        validator: function (el) {
+          return el === this.password;
+        },
+        message: 'Passwords did not match',
+      },
     },
   },
   { versionKey: false }
 );
+
+userSchema.pre('save', async function (next) {
+  // check for password change (creation or modification)
+  if (!this.isModified('password')) {
+    return next();
+  } else {
+    //  hash password (using bcrypt) with cost of 10
+    this.password = await bcrypt.hash(this.password, 12);
+
+    //  clear/ delete passwordConfirm field
+    this.passwordConfirm = undefined;
+    next();
+  }
+});
 
 //  CREATE MODEL USING SCHEAM
 
