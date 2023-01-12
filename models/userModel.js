@@ -26,13 +26,13 @@ const userSchema = new mongoose.Schema(
 
     password: {
       type: String,
-      required: [true, 'User must have a password'],
+      required: [, 'User must have a password'],
       minlength: 8,
     },
 
     passwordConfirm: {
       type: String,
-      required: [true, 'User should confirm password'],
+      required: [false, 'User should confirm password'],
       validate: {
         // on save or on create check validation
         validator: function (el) {
