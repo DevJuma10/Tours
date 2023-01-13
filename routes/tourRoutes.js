@@ -5,6 +5,8 @@ const express = require('express');
 
 const router = express.Router();
 const tourControler = require('../controlers/tourControler');
+const authControler = require('../controlers/authControler');
+const protect = require('./../controlers/authControler');
 
 //CUSTOM MIDDLEWARE TO SPECIFIC PARAMETER
 //  PARAM MIDDLEWARE
@@ -19,7 +21,10 @@ router
 
 router.route('/tour-stats').get(tourControler.getToursStats);
 
-router.route('/').get(tourControler.getAllTours).post(tourControler.createTour);
+router
+  .route('/')
+  .get(authControler.protect, tourControler.getAllTours)
+  .post(tourControler.createTour);
 
 router
   .route('/:id')
