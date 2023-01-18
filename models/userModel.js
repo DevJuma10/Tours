@@ -42,6 +42,7 @@ const userSchema = new mongoose.Schema(
         message: 'Passwords did not match',
       },
     },
+    passowrdChangedAt: Date,
   },
   { versionKey: false }
 );
@@ -67,6 +68,22 @@ userSchema.methods.correctPassword = async function (
   userPassword
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+//CHECK IF USER CHANGED PASSWORD AFTER LOGIN
+userSchema.methods.changedPasswordAfter = async function (JWTimestamp) {
+  if (this.passowrdChangedAt) {
+    console.log(this.passowrdChangedAt, JWTimestamp);
+    const changedTimestamp = parseInt(
+      this.passowrdChangedAt.getTime() / 1000,
+      10
+    );
+    console.log(this.passowrdChangedAt, JWTimestamp);
+
+    return JWTimestamp < changedTimestamp;
+  }
+
+  return false;
 };
 
 //  CREATE MODEL USING SCHEAM
