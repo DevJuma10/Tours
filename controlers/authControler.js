@@ -108,7 +108,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     );
   }
   // 4> Check if user changed password after JwT was issued
-  if (currentUser.changedPasswordAfter(decodedToken.iat)) {
+  if (!currentUser.changedPasswordAfter(decodedToken.iat)) {
     return next(
       new AppError('User recently changed password, Login again', 401)
     );
