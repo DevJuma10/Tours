@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 //NAME, EMAIL, PHOTO, PASSWORD, PASSWORD CONFIRM.
 
 //Create Schema
-const userSchema = new mongoose.Schema(
+const UserSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -48,7 +48,7 @@ const userSchema = new mongoose.Schema(
 );
 
 // HASHING THE PASSWORD BEFORE STORING IN DB
-userSchema.pre('save', async function (next) {
+UserSchema.pre('save', async function (next) {
   // check for password change (creation or modification)
   if (!this.isModified('password')) {
     return next();
@@ -63,7 +63,7 @@ userSchema.pre('save', async function (next) {
 });
 
 // VALIDATING PASWWORD PROVIDED
-userSchema.methods.correctPassword = async function (
+UserSchema.methods.correctPassword = async function (
   candidatePassword,
   userPassword
 ) {
@@ -71,7 +71,7 @@ userSchema.methods.correctPassword = async function (
 };
 
 //CHECK IF USER CHANGED PASSWORD AFTER LOGIN
-userSchema.methods.changedPasswordAfter = async function (JWTimestamp) {
+UserSchema.methods.changedPasswordAfter = async function (JWTimestamp) {
   if (this.passowrdChangedAt) {
     console.log(this.passowrdChangedAt, JWTimestamp);
     const changedTimestamp = parseInt(
@@ -88,7 +88,7 @@ userSchema.methods.changedPasswordAfter = async function (JWTimestamp) {
 
 //  CREATE MODEL USING SCHEAM
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('User', UserSchema);
 
 // Export Module
 module.exports = User;

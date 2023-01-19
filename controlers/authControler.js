@@ -97,7 +97,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // 3> Check if the user still exists
 
-  const currentUser = User.findById(decodedToken.id);
+  const currentUser = await User.findById(decodedToken.id);
 
   if (!currentUser) {
     return next(
@@ -108,7 +108,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     );
   }
   // 4> Check if user changed password after JwT was issued
-  if (currentUser.changedpasswordAfter(decoded.iat)) {
+  if (currentUser.changedPasswordAfter(decodedToken.iat)) {
     return next(
       new AppError('User recently changed password, Login again', 401)
     );
