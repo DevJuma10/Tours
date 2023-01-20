@@ -11,6 +11,9 @@ router.post('/signup', authControler.signup);
 
 router.post('/login', authControler.login);
 
+router.post('/forgotPassword', authControler.forgotPassword);
+router.post('/resetPassword', authControler.resetPassword);
+
 router.route('/').get(userControler.getAllUsers).post(userControler.createUser);
 
 router
