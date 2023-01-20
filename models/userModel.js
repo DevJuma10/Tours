@@ -1,3 +1,7 @@
+/**
+ *  *
+ * TRIAL MODEL
+ */
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
@@ -9,42 +13,45 @@ const UserSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, 'User Must Have Name'],
+      required: [true, 'User must have a name'],
     },
 
     email: {
       type: String,
-      required: [true, 'User must have a valid email'],
-      unique: true,
+      required: [true, 'User must have an email'],
       lowercase: true,
-      validate: [validator.isEmail, 'Pease Provide a valid email'],
+      validate: [validator.isEmail, 'Please Provide a valid email'],
     },
 
-    photo: {
+    role: {
       type: String,
+      enum: ['admin', 'guide', 'lead-guide', 'user'],
+      default: 'user',
     },
 
+    photo: String,
     password: {
       type: String,
-      required: [, 'User must have a password'],
+      required: [true, 'User must have a password'],
       minlength: 8,
       select: false,
     },
 
     passwordConfirm: {
       type: String,
-      required: [false, 'User should confirm password'],
+      required: [true, 'Please confirm your password'],
       validate: {
-        // on save or on create check validation
+        // This only works on CREATE and SAVE!!!
         validator: function (el) {
           return el === this.password;
         },
-        message: 'Passwords did not match',
+        message: 'Passwords are not the same!',
       },
     },
-    passowrdChangedAt: Date,
+
+    passwordChangedAt: Date,
   },
-  { versionKey: false }
+  { versionKey: false, strict: true }
 );
 
 // HASHING THE PASSWORD BEFORE STORING IN DB
