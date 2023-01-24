@@ -1,7 +1,3 @@
-/**
- *  *
- * TRIAL MODEL
- */
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
@@ -62,14 +58,13 @@ UserSchema.pre('save', async function (next) {
   // check for password change (creation or modification)
   if (!this.isModified('password')) {
     return next();
-  } else {
-    //  hash password (using bcrypt) with cost of 10
-    this.password = await bcrypt.hash(this.password, 12);
-
-    //  clear/ delete passwordConfirm field
-    this.passwordConfirm = undefined;
-    next();
   }
+  //  hash password (using bcrypt) with cost of 10
+  this.password = await bcrypt.hash(this.password, 12);
+
+  //  clear/ delete passwordConfirm field
+  this.passwordConfirm = undefined;
+  next();
 });
 
 // VALIDATING PASWWORD PROVIDED

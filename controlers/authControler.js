@@ -1,14 +1,15 @@
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
-const User = require('./../models/userModel');
-const catchAsync = require('./../utils/catchAsync');
-const AppError = require('./../utils/appError');
+const User = require('../models/userModel');
+const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
 
 // Sign Token
 const signToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+  const tkn = jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
+  return tkn;
 };
 
 // Sign-up users ---> Create Users
@@ -24,8 +25,8 @@ exports.signup = catchAsync(async (req, res, next) => {
   });
 
   //  SIGN ON A SUCCESSFULLY REGISTERD USER
-  let token = undefined;
-  token = await signToken(newUser._id);
+
+  const token = await signToken(newUser._id);
 
   console.log(token);
   //SEND CRAETED USER TO CLIENT
@@ -36,6 +37,8 @@ exports.signup = catchAsync(async (req, res, next) => {
       user: newUser,
     },
   });
+
+  next();
 });
 
 // Loggin-in users --> for existing users
@@ -70,6 +73,8 @@ exports.login = catchAsync(async (req, res, next) => {
     status: 'success',
     token,
   });
+
+  next();
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -119,8 +124,9 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
-exports.restrictTo = (...roles) => {
-  return (req, res, next) => {
+exports.restrictTo =
+  (...roles) =>
+  (req, res, next) => {
     // roles ['admin','lead-guide']
     //role=user
 
@@ -128,11 +134,9 @@ exports.restrictTo = (...roles) => {
       return next(
         new AppError('You don not have permissions to perfom this role', 403)
       );
-
-      next();
     }
+    next();
   };
-};
 
 // exports.forgotPassword = catchAsync(async (req, res, next) => {
 //   //1>get user based on posted email
@@ -149,10 +153,33 @@ exports.restrictTo = (...roles) => {
 //   // send it back as a mail
 // });
 
-exports.forgotPassword = (req, res, next) => {
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  // 1.) Get user based on posted email
+  const user = await User.findOne({ email: req.body.email });
+
+  // 2.) Return Error if no user
+  if (!user) {
+    next(new AppError('No user matching that email', 404));
+  }
+
+  // 3.) Generate a temporary random Token
+  const resetToken = user.createPasswordResetToken();
+  await user.save({ validateBeforeSave: false });
+
   res.status(200).json({
-    message: 'Youve Hit /forgotPassword',
+    message: user,
+    token: resetToken,
   });
-};
+
+  next();
+});
 
 exports.resetPassword = catchAsync(async (req, res, next) => {});
+
+exports.amore = catchAsync(async (req, res, next) => {
+  res.status(200).json({
+    status: 'sucess',
+    message: 'you have reached /amore',
+  });
+  next();
+});

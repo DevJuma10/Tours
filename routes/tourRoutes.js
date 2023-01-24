@@ -6,7 +6,6 @@ const express = require('express');
 const router = express.Router();
 const tourControler = require('../controlers/tourControler');
 const authControler = require('../controlers/authControler');
-const protect = require('./../controlers/authControler');
 
 //CUSTOM MIDDLEWARE TO SPECIFIC PARAMETER
 //  PARAM MIDDLEWARE
