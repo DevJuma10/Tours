@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const sendEmail = require('../utils/email');
 
 // Sign Token
 const signToken = (id) => {
@@ -138,48 +139,49 @@ exports.restrictTo =
     next();
   };
 
-// exports.forgotPassword = catchAsync(async (req, res, next) => {
-//   //1>get user based on posted email
-//   const user = await User.findOne({ email: req.body.email });
-
-//   if (!user) {
-//     return next(new AppError('No user with that email', 404));
-//   }
-
-//   //2> generate the random token
-//   const resetToken = user.createPasswordResetToken();
-//   await user.save({ validateBeforeSave: false });
-
-//   // send it back as a mail
-// });
-
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   // 1.) Get user based on posted email
   const user = await User.findOne({ email: req.body.email });
 
   // 2.) Return Error if no user
   if (!user) {
-    next(new AppError('No user matching that email', 404));
+    next(new AppError('No user matching that email address', 404));
   }
 
   // 3.) Generate a temporary random Token
   const resetToken = user.createPasswordResetToken();
-  await user.save({ validateBeforeSave: false });
 
-  res.status(200).json({
-    message: user,
-    token: resetToken,
-  });
+  await user.save({ validateBeforeSave: false }); //validateBeforeSave --> devalidates all fields marked as required in the schema
 
-  next();
+  // 4.) Send it ti user's email
+  try {
+    const resetURL = `${req.protocol}://${req.get(
+      'host'
+    )}/api/v1/users/resetPassword/${resetToken}`;
+
+    const message = `Forgot your password ? Submit a PATCH request with your new password and passwordConfirm to ${resetURL}.\nIf your didn't forget password, please ignore this email!`;
+
+    await sendEmail({
+      email: user.email,
+      subject: 'Your password reset token (Valid for 10 min)',
+      message,
+    });
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Token sent to email',
+    });
+
+    next();
+  } catch (error) {
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    return next(
+      new AppError('There was an error sending the Email, try again later', 500)
+    );
+  }
 });
 
 exports.resetPassword = catchAsync(async (req, res, next) => {});
-
-exports.amore = catchAsync(async (req, res, next) => {
-  res.status(200).json({
-    status: 'sucess',
-    message: 'you have reached /amore',
-  });
-  next();
-});

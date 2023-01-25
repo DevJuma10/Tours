@@ -9,14 +9,10 @@ const userControler = require('../controlers/userControler');
 const authControler = require('../controlers/authControler');
 
 router.post('/signup', authControler.signup);
-
 router.post('/login', authControler.login);
 
-//test
-router.get('/amore', authControler.amore);
-
-router.get('/forgotPassword', authControler.forgotPassword);
-router.post('/resetPassword', authControler.resetPassword);
+router.post('/forgotPassword', authControler.forgotPassword);
+router.patch('/resetPassword/:token', authControler.resetPassword);
 
 router.route('/').get(userControler.getAllUsers).post(userControler.createUser);
 
