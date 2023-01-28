@@ -6,21 +6,24 @@ const sendEmail = async (options) => {
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT,
     auth: {
-      user: process.env.EMAIL_USERNAME,
-      password: process.env.EMAIL_PASSWORD,
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD,
     },
   });
 
   //define email options
   const mailOptions = {
-    from: 'Admin <juma.study@gmail.com>',
+    from: '"Admin" <jumamelvine10@gmail.com>',
     to: options.email,
     subject: options.subject,
     text: options.message,
   };
+
   //send email with nodemailer
 
-  await transporter.sendEmail(mailOptions);
+  await transporter.sendMail(mailOptions);
+
+  transporter.close();
 };
 
 module.exports = sendEmail;
