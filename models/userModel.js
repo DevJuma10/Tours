@@ -67,6 +67,16 @@ UserSchema.pre('save', async function (next) {
   next();
 });
 
+// Updating passwordChangedAt on password change
+
+UserSchema.pre('save', function (next) {
+  if (!this.isModified('password' || this.isNew)) {
+    return next();
+  }
+
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
 // VALIDATING PASWWORD PROVIDED
 UserSchema.methods.correctPassword = async function (
   candidatePassword,
