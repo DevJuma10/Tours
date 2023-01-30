@@ -14,6 +14,18 @@ const signToken = (id) => {
   return tkn;
 };
 
+const createSendToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
+
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user,
+    },
+  });
+};
+
 // Sign-up users ---> Create Users
 exports.signup = catchAsync(async (req, res, next) => {
   //create user
@@ -28,17 +40,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   //  SIGN ON A SUCCESSFULLY REGISTERD USER
 
-  const token = await signToken(newUser._id);
-
-  console.log(token);
-  //SEND CRAETED USER TO CLIENT
-  res.status(201).json({
-    status: 'sucess',
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+  createSendToken(newUser, 201, res);
 
   next();
 });
@@ -69,12 +71,7 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   //If everything is fine issue a JWT
-  const token = signToken(user._id);
-
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  createSendToken(user, 200, res);
 
   next();
 });
@@ -211,9 +208,22 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   await user.save();
   // Update changed password property
   // Log in the user
-  const token = signToken(user.id);
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  createSendToken(user, 200, res);
+});
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  // Get user form the collection
+  const user = await User.findById(req.user.id).select('+password');
+
+  // Vaidate the password
+  if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
+    return next(new AppError('Your current password is wrong', 401));
+  }
+
+  // if Valid, update the password
+  user.password = req.body.passwordConfirm;
+  user.passwordConfirm = req.body.passwordConfirm;
+  await user.save();
+  // Log the user in
+  createSendToken(user, 200, res);
 });
