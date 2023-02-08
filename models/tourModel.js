@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-const User = require('./userModel');
+// const User = require('./userModel');
 
 //  CREATE SCHEMA
 const tourSchema = new mongoose.Schema(
@@ -184,6 +184,15 @@ tourSchema.pre('save', async function (next) {
 });
 
  */
+
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-passwordChangedAt',
+  });
+
+  next();
+});
 
 // filter out secret tours from all find operations (find(), findById, findOne)
 tourSchema.pre(/^find/, function (next) {
