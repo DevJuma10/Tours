@@ -114,17 +114,18 @@ tourSchema.virtual('durationWeeks').get(function () {
 //  DOCUMENT MIDDLEWARE (pre-middleware): runs before .save() aand .create() NOT for update()
 
 tourSchema.pre('save', function (next) {
-  (this.slug = slugify(this.name)), { lower: true };
+  this.slug = slugify(this.name, { lower: true });
   next();
 });
 
-tourSchema.pre('save', function (next) {
+tourSchema.pre('save', (next) => {
   console.log('Saving Document ...');
   next();
 });
 
 //  DOCUMENT MIDDLEWARE (post-middleware): runs after .save() aand .create()
 
+// eslint-disable-next-line prefer-arrow-callback
 tourSchema.post('save', function (doc, next) {
   console.log(doc);
   next();
