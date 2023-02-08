@@ -114,7 +114,12 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
-    guides: [],
+    guides: [
+      {
+        type: mongoose.Schema.Objectid,
+        ref: 'User',
+      },
+    ],
     premium: {
       type: Boolean,
       default: false,
@@ -166,13 +171,19 @@ tourSchema.post('save', function (doc, next) {
 //   next();
 // });
 
+/**
+ *  EMBEDDING TOUR GUIDES DATA TO TOURS MODEL
+ * 
+
 tourSchema.pre('save', async function (next) {
   const guidesPromises = this.guides.map(
     async (id) => await User.findById({ id })
   );
-  this.guides = await Promis.all(guidesPromises);
+  this.guides = await Promise.all(guidesPromises);
   next();
 });
+
+ */
 
 // filter out secret tours from all find operations (find(), findById, findOne)
 tourSchema.pre(/^find/, function (next) {
