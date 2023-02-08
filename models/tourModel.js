@@ -116,7 +116,7 @@ const tourSchema = new mongoose.Schema(
     ],
     guides: [
       {
-        type: mongoose.Schema.Objectid,
+        type: mongoose.Schema.ObjectId,
         ref: 'User',
       },
     ],
