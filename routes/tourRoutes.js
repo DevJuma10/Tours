@@ -6,6 +6,8 @@ const express = require('express');
 const router = express.Router();
 const tourControler = require('../controlers/tourControler');
 const authControler = require('../controlers/authControler');
+// const reviewControler = require('../controlers/reviewControler');
+const reviewRouter = require('./reviewRoutes');
 
 //CUSTOM MIDDLEWARE TO SPECIFIC PARAMETER
 //  PARAM MIDDLEWARE
@@ -34,5 +36,15 @@ router
     tourControler.deleteTour
   )
   .patch(tourControler.updateTour);
+
+// router
+//   .route('/:tourId/reviews')
+//   .post(
+//     authControler.protect,
+//     authControler.restrictTo('user'),
+//     reviewControler.createReview
+//   );
+
+router.use('/:tourId/reviews', reviewRouter);
 
 module.exports = router;
