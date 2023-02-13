@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const factory = require('./handlerFactory');
 
 /**
  * USER CONTRILER
@@ -76,12 +77,9 @@ exports.updateUser = (req, res) => {
     message: 'This route is not defined',
   });
 };
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not defined',
-  });
-};
+
+exports.deleteUser = factory.deleteOne(User);
+
 exports.getUser = (req, res) => {
   res.status(500).json({
     status: 'error',

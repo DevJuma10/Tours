@@ -20,14 +20,14 @@ router.patch(
 );
 
 router.patch('/updateMe', authControler.protect, userControler.updateMe);
-router.delete('/deleteMe', authControler.protect, userControler.deleteMe);
+// router.delete('/deleteMe', authControler.protect, userControler.deleteMe);
 
 router.route('/').get(userControler.getAllUsers).post(userControler.createUser);
 
-router
-  .route(':id')
-  .patch(userControler.updateUser)
-  .delete(userControler.deleteUser)
-  .get(userControler.getUser);
+// router
+//   .route('/:id')
+//   .patch(userControler.updateUser)
+//   .delete(userControler.deleteUser)
+//   .get(userControler.getUser);
 
 module.exports = router;

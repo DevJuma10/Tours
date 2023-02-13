@@ -27,15 +27,15 @@ router
   .get(authControler.protect, tourControler.getAllTours)
   .post(tourControler.createTour);
 
+router.route('/:id').get(tourControler.getTour).patch(tourControler.updateTour);
+
 router
   .route('/:id')
-  .get(tourControler.getTour)
   .delete(
     authControler.protect,
     authControler.restrictTo('admin', 'lead-guide'),
     tourControler.deleteTour
-  )
-  .patch(tourControler.updateTour);
+  );
 
 // router
 //   .route('/:tourId/reviews')
