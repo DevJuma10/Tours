@@ -1,13 +1,5 @@
 const mongoose = require('mongoose');
 
-/**
- * text
- * reating
- * createdat
- * reference to tour
- * reference to user
- */
-
 const reviewSchema = mongoose.Schema(
   {
     review: {
@@ -44,10 +36,15 @@ const reviewSchema = mongoose.Schema(
 
 // PRE-FIND MIDDLEWARES
 reviewSchema.pre(/^find/, function (next) {
+  // this.populate({
+  //   path: 'tour',
+  //   select: 'name',
+  // }).populate({
+  //   path: 'user',
+  //   select: 'name photo',
+  // });
+
   this.populate({
-    path: 'tour',
-    select: 'name',
-  }).populate({
     path: 'user',
     select: 'name photo',
   });

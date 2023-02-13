@@ -92,7 +92,7 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 //GET TOUR
 exports.getTour = catchAsync(async (req, res, next) => {
   // try {
-  const tour = await Tour.findById(req.params.id);
+  const tour = await Tour.findById(req.params.id).populate('reviews');
 
   //Find tour with matching id
   // const tour = tours.filter((el) => el.id === id);

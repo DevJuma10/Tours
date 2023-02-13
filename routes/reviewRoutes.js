@@ -1,12 +1,14 @@
 const express = require('express');
 
-const router = express.Router;
+const router = express.Router();
 const reviewControler = require('../controlers/reviewControler');
 const authControler = require('../controlers/authControler');
 
 // eslint-disable-next-line prettier/prettier
-router('/')
-  .get(authControler.protect, reviewControler.getAllReviews)
+router.route('/').get(authControler.protect, reviewControler.getAllReviews);
+
+router
+  .route('/')
   .post(
     authControler.protect,
     authControler.restrictTo('user'),

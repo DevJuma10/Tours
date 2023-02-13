@@ -144,6 +144,14 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
+// VIRTUAL POPULATING REVIEWS ON TOUR MODEL
+
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
 //  DOCUMENT MIDDLEWARE (pre-middleware): runs before .save() aand .create() NOT for update()
 
 tourSchema.pre('save', function (next) {
