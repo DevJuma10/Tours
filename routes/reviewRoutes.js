@@ -15,4 +15,12 @@ router
     reviewControler.createReview
   );
 
+router
+  .route('/:tourId/reviews')
+  .post(
+    authControler.protect,
+    authControler.restrictTo('user'),
+    reviewControler.createReview
+  );
+
 module.exports = router;
