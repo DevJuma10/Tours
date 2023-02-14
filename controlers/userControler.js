@@ -68,3 +68,9 @@ exports.deleteUser = factory.deleteOne(User);
 exports.getUser = factory.getOne(User);
 
 exports.getAllUsers = factory.getAll(User);
+
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+
+  next();
+};
