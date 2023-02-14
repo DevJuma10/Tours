@@ -14,8 +14,6 @@ const reviewRouter = require('./reviewRoutes');
 
 // router.param('id', tourControler.checkID);
 
-router.route('/monthly-plan/:year').get(tourControler.getMonthlyPlan);
-
 router
   .route('/top-5-tours')
   .get(tourControler.aliasTopTours, tourControler.getAllTours);
@@ -23,11 +21,30 @@ router
 router.route('/tour-stats').get(tourControler.getToursStats);
 
 router
-  .route('/')
-  .get(authControler.protect, tourControler.getAllTours)
-  .post(tourControler.createTour);
+  .route('/monthly-plan/:year')
+  .get(
+    authControler.protect,
+    authControler.restrictTo('admin', 'lead-guide'),
+    tourControler.getMonthlyPlan
+  );
 
-router.route('/:id').get(tourControler.getTour).patch(tourControler.updateTour);
+router
+  .route('/')
+  .get(tourControler.getAllTours)
+  .post(
+    authControler.protect,
+    authControler.restrictTo('admin', 'lead-gude'),
+    tourControler.createTour
+  );
+
+router
+  .route('/:id')
+  .get(tourControler.getTour)
+  .patch(
+    authControler.protect,
+    authControler.restrictTo('admin', 'lead-guide'),
+    tourControler.updateTour
+  );
 
 router
   .route('/:id')

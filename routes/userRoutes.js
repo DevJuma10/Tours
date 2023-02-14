@@ -13,25 +13,24 @@ router.post('/login', authControler.login);
 
 router.post('/forgotPassword', authControler.forgotPassword);
 router.patch('/resetPassword/:token', authControler.resetPassword);
-router.patch(
-  '/updateMyPassword',
-  authControler.protect,
-  authControler.updatePassword
-);
 
-router.patch('/updateMe', authControler.protect, userControler.updateMe);
-// router.delete('/deleteMe', authControler.protect, userControler.deleteMe);
+//Protect all routes comming after this middleware
+router.use(authControler.protect);
+
+router.patch('/updateMyPassword', authControler.updatePassword);
+router.patch('/updateMe', userControler.updateMe);
+router.delete('/deleteMe', userControler.deleteMe);
+router.route('/me').get(userControler.getMe, userControler.getUser);
+
+//Restrict all routes to admins
+router.use(authControler.restrictTo('admin'));
 
 router.route('/').get(userControler.getAllUsers).post(userControler.createUser);
 
 router
-  .route('/me')
-  .get(authControler.protect, userControler.getMe, userControler.getUser);
-
-router
   .route('/:id')
+  .get(userControler.getUser)
   .patch(userControler.updateUser)
-  .delete(userControler.deleteUser)
-  .get(userControler.getUser);
+  .delete(userControler.deleteUser);
 
 module.exports = router;
