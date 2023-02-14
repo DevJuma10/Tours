@@ -57,7 +57,6 @@ const UserSchema = new mongoose.Schema(
   },
   { versionKey: false, strict: true }
 );
-
 // HASHING THE PASSWORD BEFORE STORING IN DB
 UserSchema.pre('save', async function (next) {
   // check for password change (creation or modification)
