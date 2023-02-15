@@ -82,6 +82,7 @@ exports.getAll = (Model) =>
   catchAsync(async (req, res, next) => {
     //TO ALLOW FOR NESTED GET REVIEWS
     let filter = {};
+    // eslint-disable-next-line no-unused-vars
     if (req.params.tourId) filter = { tour: req.params.tourId };
     const features = new APIFeatures(Model.find(), req.query)
       .filter()
