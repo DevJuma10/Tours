@@ -34,6 +34,8 @@ const reviewSchema = mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+// Using index to limit one reveiw per user per tour
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
 
 // PRE-FIND MIDDLEWARES
 reviewSchema.pre(/^find/, function (next) {
