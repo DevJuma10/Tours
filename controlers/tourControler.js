@@ -326,6 +326,8 @@ exports.getDistances = catchAsync(async (req, res, next) => {
 
   const [lat, lng] = latlng.split(',');
 
+  const multiplier = unit === 'mi' ? 0.00621371 : 0.001;
+
   if (!lat || !lng) {
     next(
       new AppError(
@@ -340,9 +342,16 @@ exports.getDistances = catchAsync(async (req, res, next) => {
       $geoNear: {
         near: {
           type: 'Point',
-          coordinaes: [lng * 1, lat * 1],
+          coordinates: [lng * 1, lat * 1],
         },
         distanceField: 'distance',
+        distanceMultiplier: multiplier,
+      },
+    },
+    {
+      $project: {
+        distance: 1,
+        name: 1,
       },
     },
   ]);
