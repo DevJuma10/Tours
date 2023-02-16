@@ -228,12 +228,12 @@ tourSchema.post(/^find/, function (doc, next) {
 //  AGGREGATION MIDDLEWARE
 
 //  adds a filter to filter out secret tours
-
-tourSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { secret: { $ne: true } } });
-  console.log(this.pipeline());
-  next();
-});
+// ******** COMMENTED OUT BECAUSE OFF INTERFERENCE WITH GEONEAR PIPELINE *******
+// tourSchema.pre('aggregate', function (next) {
+//   this.pipeline().unshift({ $match: { secret: { $ne: true } } });
+//   console.log(this.pipeline());
+//   next();
+// });
 
 //  CREATING A SIMPLE TOUR MODEL
 const Tour = mongoose.model('Tour', tourSchema);
