@@ -1,0 +1,10 @@
+const express = require('express');
+
+const router = express.Router();
+const viewControler = require('../controlers/viewsControler');
+
+router.get('/', viewControler.getOverview);
+
+router.get('/tour', viewControler.getTour);
+
+module.exports = router;
