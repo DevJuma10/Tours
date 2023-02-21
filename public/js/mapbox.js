@@ -8,8 +8,11 @@ mapboxgl.accessToken =
   'pk.eyJ1IjoiZGV2anVtYSIsImEiOiJjbGVkOHcyMTcwNG1nM3BtdmR2NXhldmk0In0.E1BsbSWhQ-2BrqZzZ-hDYw';
 var map = new mapboxgl.Map({
   container: 'map',
-  style: 'mapbox://styles/devjuma/cled957nk000u01pgl0yovmej',
-  scrollZooom: false,
+  // monochorme light maps
+  // style: 'mapbox://styles/devjuma/cled957nk000u01pgl0yovmej',
+  // monochrome dark maps
+  style: 'mapbox://styles/devjuma/cledzhzym000b01nmid3v00hx',
+  scrollZoom: false,
   // center: [-118.113491, 34.11745],
   // zoom: 4,
   // interactive: false,
@@ -17,9 +20,13 @@ var map = new mapboxgl.Map({
 
 const bounds = new mapboxgl.LngLatBounds();
 
+console.log(locations);
+
 locations.forEach((loc) => {
   // CREATE MARKER
   const el = document.createElement('div');
+  el.className = 'marker';
+
   //ADD MARKER
   new mapboxgl.Marker({
     element: el,
@@ -33,7 +40,9 @@ locations.forEach((loc) => {
     offset: 30,
   })
     .setLngLat(loc.coordinates)
-    .setHTML(`<p>Daty ${loc.day}: ${loc.description}</p>`);
+    .setHTML(`<h5>Day ${loc.day}: ${loc.description}</h5>`)
+    .addTo(map);
+
   //EXTEND BOUNDS TO INCLUDE CURRENT LOCATION
   bounds.extend(loc.coordinates);
 });
@@ -41,7 +50,7 @@ locations.forEach((loc) => {
 map.fitBounds(bounds, {
   padding: {
     top: 200,
-    bottom: 200,
+    bottom: 150,
     left: 100,
     right: 100,
   },
