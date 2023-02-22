@@ -78,12 +78,9 @@ exports.login = catchAsync(async (req, res, next) => {
 
   //check if user exist
   const user = await User.findOne({ email }).select('+password');
-  const correct = await user.correctPassword(password, user.password);
 
-  //check if password is correct
-
-  if (!user || !correct) {
-    return next(new AppError('Incorrect Email or Password', 401));
+  if (!user || !(await user.correctPassword(password, user.password))) {
+    return next(new AppError('Incorrect email or password', 401));
   }
 
   //If everything is fine issue a JWT
@@ -101,6 +98,8 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
 
   if (!token) {
