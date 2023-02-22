@@ -62,7 +62,7 @@ exports.createOne = (Model) =>
 exports.getOne = (Model, populateOptions) =>
   catchAsync(async (req, res, next) => {
     let query = Model.findById(req.params.id);
-    if (populateOptions) query = query(populateOptions);
+    if (populateOptions) query = query.populate(populateOptions);
 
     const document = await query;
 
