@@ -90,24 +90,24 @@ exports.login = catchAsync(async (req, res, next) => {
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
-  //  1> Get JWT and check
-  let token = '';
-
+  // 1) Getting token and check of it's there
+  let token;
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
   ) {
+    // Extract the token from the Authorization header
     token = req.headers.authorization.split(' ')[1];
   } else if (req.cookies.jwt) {
+    // Get the token from the jwt cookie
     token = req.cookies.jwt;
   }
 
   if (!token) {
     return next(
-      new AppError('Your are not logged in. Please login to get access', 401)
+      new AppError('You are not logged in! Please log in to get access.', 401)
     );
   }
-
   // 2> Validate the JWT
   const decodedToken = await promisify(jwt.verify)(
     token,
