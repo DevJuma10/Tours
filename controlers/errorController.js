@@ -18,14 +18,12 @@ const handleValidationErrorDB = (err) => {
   return new AppError(message, 400);
 };
 
-const handleJWTError = (err) => {
-  return new AppError('Invalid Token, Please log-in', 401);
-};
+const handleJWTError = () => new AppError('Invalid Token, Please log-in', 401);
 
-const handleJWTExpiredError = (err) => {
-  return new AppError('Your Token has expired, Please Log in again, 401');
-};
-const sendDevelopmentError = (err, res) => {
+const handleJWTExpiredError = () =>
+  new AppError('Your Token has expired, Please Log in again, 401');
+
+const sendDevelopmentError = (err, req, res) => {
   // development errors - (a lot more detailed)
   res.status(err.statusCode).json({
     status: err.status,
@@ -68,10 +66,12 @@ module.exports = (err, req, res, next) => {
   // Returning different errors depending on environment (production | development)
   if (process.env.NODE_ENV === 'development') {
     // send dev error
-    sendDevelopmentError(err, res);
+    sendDevelopmentError(err, req, res);
   } else if (process.env.NODE_ENV === 'production') {
     // send producton errors
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
     let error = { ...err };
+    error.message = err.message;
 
     //operational errors
     if (error.name === 'CastError ') error = handleCastErrorBD(error);

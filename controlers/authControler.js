@@ -1,4 +1,5 @@
 const { promisify } = require('util');
+
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const User = require('../models/userModel');
@@ -28,6 +29,7 @@ const createSendToken = (user, statusCode, res) => {
   if (process.env.NODE_ENV === 'production') {
     cookieOptions.secure = true;
   }
+
   res.cookie('jwt', token, cookieOptions);
 
   //stop password from showing up in the output
@@ -41,6 +43,30 @@ const createSendToken = (user, statusCode, res) => {
     },
   });
 };
+
+// const createSendToken = (user, statusCode, res) => {
+//   const token = signToken(user._id);
+//   const cookieOptions = {
+//     expires: new Date(
+//       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+//     ),
+//     httpOnly: true,
+//   };
+//   if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
+//   res.cookie('jwt', token, cookieOptions);
+
+//   // Remove password from output
+//   user.password = undefined;
+
+//   res.status(statusCode).json({
+//     status: 'success',
+//     token,
+//     data: {
+//       user,
+//     },
+//   });
+// };
 
 // Sign-up users ---> Create Users
 exports.signup = catchAsync(async (req, res, next) => {
@@ -241,4 +267,33 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   await user.save();
   // Log the user in
   createSendToken(user, 200, res);
+});
+
+//  only for rendererd pages --> no errors
+
+exports.isLogedIn = catchAsync(async (req, res, next) => {
+  if (req.cookies.jwt) {
+    //verify token
+    const decodedToken = await promisify(jwt.verify)(
+      req.cookies.jwt,
+      process.env.JWT_SECRET
+    );
+
+    // > Check if the user still exists
+
+    const currentUser = await User.findById(decodedToken.id);
+
+    if (!currentUser) {
+      return next();
+    }
+    // > Check if user changed password after JwT was issued
+    if (!currentUser.changedPasswordAfter(decodedToken.iat)) {
+      return next();
+    }
+
+    // THERE IS A LOGGED IN USER
+    res.locals.user = currentUser;
+    return next();
+  }
+  next();
 });
